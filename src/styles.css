@@ -63,7 +63,7 @@ body {
 
 .section1 {
   background-size: 100%;
-  background-image: url("../Frontend/Images/welcome_dog.jpg");
+  background-image: url("/public/Images/welcome_dog.jpg");
   background-repeat: no-repeat;
   height: 40vw;
 }
