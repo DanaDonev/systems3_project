@@ -22,7 +22,7 @@ export default function HeaderView() {
                         <a className="nav-link text-black" href="/howitworks">How it works?</a>
                     </li>
                     <li className="nav-item">
-                        <a className="btn btn-secondary" href="/register">Sign Up</a>
+                        <a className="btn btn-secondary" href="/signin">Sign In</a>
                         {/* <Link to="/register" className="btn btn-secondary" aria-current="page">
                             Sign Up
                         </Link> */}
