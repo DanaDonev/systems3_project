@@ -1,89 +1,96 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import data from "../data/pets&categories.json";
+
 export default function ForumInitialView() {
-    return <>
-        <section className="container text-center my-5" style={{ maxWidth: "70%" }}>
-            <div className="p-3 rounded shadow">
-                <h2 className="text-center mb-4">Forum</h2>
+  const { pets, categories } = data;
 
-                <h5 className="mt-4">Choose pet</h5>
-                <div className="d-flex justify-content-center flex-wrap">
-                    {/* Pet Options */}
-                    <input type="radio" name="pet" id="dog" className="image-radio" />
-                    <label htmlFor="dog" className="image-label">
-                        <img src="/Images/dog.png" alt="Dog" />
-                    </label>
+  const [pet, setPet] = useState("");
+  const [category, setCategory] = useState("");
 
-                    <input type="radio" name="pet" id="cat" className="image-radio" />
-                    <label htmlFor="cat" className="image-label">
-                        <img src="/Images/cat (2).png" alt="Cat" />
-                    </label>
+  const navigator = useNavigate();
 
-                    <input type="radio" name="pet" id="hamster" className="image-radio" />
-                    <label htmlFor="hamster" className="image-label">
-                        <img src="/Images/hamster.png" alt="Hamster" />
-                    </label>
+  const handlePetChange = (e) => {
+    setPet(e.target.id);
+    console.log(pet);
+  };
 
-                    <input type="radio" name="pet" id="parrot" className="image-radio" />
-                    <label htmlFor="parrot" className="image-label">
-                        <img src="/Images/parrot.png" alt="Parrot" />
-                    </label>
+  const handleCategoryChange = (e) => {
+    if (category === e.target.id) {
+      setCategory("");
+      return;
+    }
+    setCategory(e.target.id);
+    console.log(category);
+  };
 
-                    <input type="radio" name="pet" id="snake" className="image-radio" />
-                    <label htmlFor="snake" className="image-label">
-                        <img src="/Images/snake (1).png" alt="Snake" />
-                    </label>
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-                    <input type="radio" name="pet" id="bunny" className="image-radio" />
-                    <label htmlFor="bunny" className="image-label">
-                        <img src="/Images/easter-bunny.png" alt="Bunny" />
-                    </label>
+    if (!pet) {
+      alert("Please select a pet");
+      return;
+    }
+    console.log("Selected pet:", pet, "Selected category:", category);
 
-                    <input type="radio" name="pet" id="lizard" className="image-radio" />
-                    <label htmlFor="lizard" className="image-label">
-                        <img src="/Images/lizard.png" alt="Lizard" />
-                    </label>
+    if (!category) {
+      navigator(`/forum/${pet}`);
+    } else {
+      navigator(`/forum/${pet}/${category}`);
+    }
+  };
 
-                    <input type="radio" name="pet" id="spider" className="image-radio" />
-                    <label htmlFor="spider" className="image-label">
-                        <img src="/Images/spider.png" alt="Spider" />
-                    </label>
+  return (
+    <>
+      <section
+        className="container text-center my-5"
+        style={{ maxWidth: "70%" }}
+      >
+        <div className="p-3 rounded shadow">
+          <h2 className="text-center mb-4">Forum</h2>
 
-                    <input type="radio" name="pet" id="unicorn" className="image-radio" />
-                    <label htmlFor="unicorn" className="image-label">
-                        <img src="/Images/unicorn.png" alt="Other" />
-                    </label>
-                </div>
+          <h5 className="mt-4">Choose pet *</h5>
+          <div className="d-flex justify-content-center flex-wrap">
+            {pets.map((pet) => (
+              <div key={pet.id} className="d-inline-block text-center mx-1">
+                <input
+                  type="radio"
+                  name="pet"
+                  id={pet.id}
+                  className="image-radio"
+                  onChange={handlePetChange}
+                />
+                <label htmlFor={pet.id} className="image-label">
+                  <img src={pet.img} alt={pet.id} />
+                </label>
+              </div>
+            ))}
+          </div>
 
-                <h5 className="mt-4">Choose category</h5>
-                <div className="d-flex justify-content-center flex-wrap">
-                    {/* Category Options */}
-                    <input type="radio" name="category" id="cat0" className="image-radio" />
-                    <label htmlFor="cat0" className="image-label">
-                        <img src="/Images/pet-care.png" alt="Category 1" />
-                    </label>
+          <h5 className="mt-4">Choose category</h5>
+          <div className="d-flex justify-content-center flex-wrap">
+            {categories.map((category) => (
+              <div key={category.id} className="category-radio-container">
+                <input
+                  type="radio"
+                  name="category"
+                  id={category.id}
+                  className="image-radio"
+                  onChange={handleCategoryChange}
+                  value={category.id}
+                />
+                <label htmlFor={category.id} className="image-label">
+                  <img src={category.img} alt={category.id} />
+                </label>
+              </div>
+            ))}
+          </div>
 
-                    <input type="radio" name="category" id="cat1" className="image-radio" />
-                    <label htmlFor="cat1" className="image-label">
-                        <img src="/Images/healthcare.png" alt="Category 2" />
-                    </label>
-
-                    <input type="radio" name="category" id="cat2" className="image-radio" />
-                    <label htmlFor="cat2" className="image-label">
-                        <img src="/Images/pet-food.png" alt="Category 3" />
-                    </label>
-
-                    <input type="radio" name="category" id="cat3" className="image-radio" />
-                    <label htmlFor="cat3" className="image-label">
-                        <img src="/Images/grooming.png" alt="Category 4" />
-                    </label>
-
-                    <input type="radio" name="category" id="cat4" className="image-radio" />
-                    <label htmlFor="cat4" className="image-label">
-                        <img src="/Images/walk-the-pet.png" alt="Category 5" />
-                    </label>
-                </div>
-
-                <button className="btn btn-secondary mt-4">Next</button>
-            </div>
-        </section>
+          <button className="btn btn-secondary mt-4" onClick={handleSubmit}>
+            Next
+          </button>
+        </div>
+      </section>
     </>
+  );
 }

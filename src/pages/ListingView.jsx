@@ -1,9 +1,11 @@
 export default function ListingView() {
-    return <>
+
+    return (
+    <>
         <div className="container mt-4">
             <div className="p-3 rounded shadow">
                 <div className="row">
-                    {/* Filter Sidebar */}
+                    
                     <div className="col-md-3 bg-light p-3 filter-scrollable">
                         <h5>Filter</h5>
 
@@ -107,4 +109,4 @@ export default function ListingView() {
             </div>
         </div>
     </>
-}
+);}

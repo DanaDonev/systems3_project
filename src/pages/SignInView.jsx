@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 //import { useAuth } from "../AuthContext";
 import axios from "axios";
+import ForgotPassword from "./ForgotPassword";
 
 export default function SignInView() {
-  // const [username, setUsername] = useState("");
-  // const [password, setPassword] = useState("");
+
+  const [showForgot, setShowForgot] = useState(false);
 
   const [form, setForm] = useState({ username: "", password: "" });
 
@@ -38,7 +39,7 @@ export default function SignInView() {
         //const profile = profileRes.data;
         //setUser(profile); // Uncomment if using AuthContext
         navigate("/forum");
-      } 
+      }
     } catch (err) {
       alert("Invalid username or password");
     }
@@ -97,7 +98,14 @@ export default function SignInView() {
                 value={form.password}
                 onChange={handleChange}
               />
-              <Link to="/forgot-password" className="text-secondary small d-block text-end">
+              <Link
+                to="#"
+                className="text-secondary small d-block text-end"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowForgot(true);
+                }}
+              >
                 Forgot your password?
               </Link>
             </div>
@@ -116,6 +124,8 @@ export default function SignInView() {
           </p>
         </div>
       </section>
+
+      <ForgotPassword show={showForgot} onClose={() => setShowForgot(false)} /> 
     </>
   );
 }

@@ -1,0 +1,10 @@
+export { default as HomeView } from "./HomeView";
+export { default as AboutUsView } from "./AboutUsView";
+export { default as HowItWorksView } from "./HowItWorksView";
+export { default as ForumView } from "./ForumView";
+export { default as ForumInitialView } from "./ForumInitialView";
+export { default as SignInView } from "./SignInView";
+export { default as SignUpView } from "./SignUpView";
+export { default as CreatePostView } from "./CreatePostView";
+export { default as PageNotFound } from "./PageNotFound";
+export { default as ListingView } from "./ListingView";

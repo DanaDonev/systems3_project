@@ -1,0 +1,20 @@
+{
+  "pets": [
+    { "id": "dog", "img": "/Images/dog.png" },
+    { "id": "cat", "img": "/Images/cat (2).png" },
+    { "id": "hamster", "img": "/Images/hamster.png" },
+    { "id": "parrot", "img": "/Images/parrot.png" },
+    { "id": "snake", "img": "/Images/snake (1).png" },
+    { "id": "bunny", "img": "/Images/easter-bunny.png" },
+    { "id": "lizard", "img": "/Images/lizard.png" },
+    { "id": "spider", "img": "/Images/spider.png" },
+    { "id": "unicorn", "img": "/Images/unicorn.png" }
+  ],
+  "categories": [
+    { "id": "care", "img": "/Images/pet-care.png" },
+    { "id": "health", "img": "/Images/healthcare.png" },
+    { "id": "food", "img": "/Images/pet-food.png" },
+    { "id": "bath", "img": "/Images/grooming.png" },
+    { "id": "training", "img": "/Images/walk-the-pet.png" }
+  ]
+}

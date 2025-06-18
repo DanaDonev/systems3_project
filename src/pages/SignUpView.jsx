@@ -1,8 +1,11 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
+import data from "../data/registerFields.json";
 
 export default function SignUpView() {
+  const { formFields, petFields } = data;
+
   const [userType, setUserType] = useState("petsitter");
   const [form, setForm] = useState({
     name: "",
@@ -14,8 +17,9 @@ export default function SignUpView() {
     phone: "",
     dob: "",
     address: "",
-    city: ""
+    city: "",
   });
+
   const navigate = useNavigate();
   const handleChange = (e) => {
     setForm((prev) => ({
@@ -35,14 +39,12 @@ export default function SignUpView() {
           withCredentials: true,
         }
       );
-        if (res.status === 201) {
-            alert("Registration successful!");
-            // Optionally redirect or clear for another registration
-            
-            navigate("/signin");
-        } else {
-            alert("Registration failed. Please try again.");
-        }
+      if (res.status === 201) {
+        alert("Registration successful!");
+        navigate("/signin");
+      } else {
+        alert("Registration failed. Please try again.");
+      }
     } catch (err) {
       alert("Registration failed. Please try again.");
     }
@@ -59,207 +61,60 @@ export default function SignUpView() {
 
           <div className="d-flex justify-content-center mb-4">
             <div className="btn-group" role="group" aria-label="User type">
-              {/* {["petsitter", "petowner"].map((user) =>(
-                            <div key={user}>
-                            <input
-                            type="radio"
-                            className="btn-check"
-                            name="userType"
-                            id={user}
-                            autoComplete="off"
-                            checked={userType === user}
-                            onChange={() => setUserType(user)}
-                        />
-                        <label className="btn btn-outline-secondary" htmlFor={user}>
-                        {user === "petsitter" ? "Petsitter User" : "Pet Owner"}
-                        </label>
-                        </div>
-                        ))}  */}
-              <input
-                type="radio"
-                className="btn-check"
-                name="userType"
-                id="petsitter"
-                autoComplete="off"
-                checked={userType === "petsitter"}
-                onChange={() => setUserType("petsitter")}
-              />
-              <label className="btn btn-outline-secondary" htmlFor="petsitter">
-                Petsitter User
-              </label>
-
-              <input
-                type="radio"
-                className="btn-check"
-                name="userType"
-                id="petowner"
-                autoComplete="off"
-                checked={userType === "petowner"}
-                onChange={() => setUserType("petowner")}
-              />
-              <label className="btn btn-outline-secondary" htmlFor="petowner">
-                Pet Owner
-              </label>
+              {["petsitter", "petowner"].map((user) => (
+                <>
+                  <input
+                    type="radio"
+                    className="btn-check"
+                    name="userType"
+                    id={user}
+                    autoComplete="off"
+                    checked={userType === user}
+                    onChange={() => setUserType(user)}
+                  />
+                  <label className="btn btn-outline-secondary" htmlFor={user}>
+                    {user === "petsitter" ? "Petsitter User" : "Pet Owner"}
+                  </label>
+                </>
+              ))}
             </div>
           </div>
 
-          <form className="row g-3">
-            <div className="col-md-6">
-              <label htmlFor="inputName" className="form-label mb-0">
-                Name
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="inputName"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-6">
-              <label htmlFor="inputSurname" className="form-label mb-0">
-                Surname
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="inputSurname"
-                name="surname"
-                value={form.surname}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-12">
-              <label htmlFor="inputUsername" className="form-label mb-0">
-                Username
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="inputUsername"
-                name="username"
-                value={form.username}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-6">
-              <label htmlFor="inputPassword" className="form-label mb-0">
-                Password
-              </label>
-              <input
-                type="password"
-                className="form-control"
-                id="inputPassword"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-6">
-              <label htmlFor="inputConfirmPassword" className="form-label mb-0">
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                className="form-control"
-                id="inputConfirmPassword"
-                name="confirmPassword"
-                value={form.confirmPassword}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-12">
-              <label htmlFor="inputEmail" className="form-label mb-0">
-                Email
-              </label>
-              <input
-                type="email"
-                className="form-control"
-                id="inputEmail"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-12">
-              <label htmlFor="inputPhone" className="form-label mb-0">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                className="form-control"
-                id="inputPhone"
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-12">
-              <label htmlFor="inputDOB" className="form-label mb-0">
-                Date of Birth
-              </label>
-              <input
-                type="date"
-                className="form-control"
-                id="inputDOB"
-                name="dob"
-                value={form.dob}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-6">
-              <label htmlFor="inputAddress" className="form-label mb-0">
-                Address
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="inputAddress"
-                name="address"
-                value={form.address}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-6">
-              <label htmlFor="inputCity" className="form-label mb-0">
-                City
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="inputCity"
-                name="city"
-                value={form.city}
-                onChange={handleChange}
-              />
-            </div>
+          <form className="row g-3" onSubmit={handleSubmit}>
+            {formFields.map((field) => (
+              <div key={field.name} className={field.col}>
+                <label htmlFor={field.name} className="form-label mb-0">
+                  {field.label}
+                </label>
+                <input
+                  type={field.type}
+                  className="form-control"
+                  id={field.name}
+                  name={field.name}
+                  value={form[field.name] || ""}
+                  onChange={handleChange}
+                />
+              </div>
+            ))}
 
             {userType === "petowner" && (
               <div id="petInfoSection" className="mt-4">
                 <h5 className="text-center mb-3">Pet Info</h5>
-
-                <div className="col-12">
-                  <label htmlFor="petName" className="form-label mb-0">
-                    Pet Name
-                  </label>
-                  <input type="text" className="form-control" id="petName" />
-                </div>
-
-                <div className="row">
-                  <div className="col-md-6 mt-3">
-                    <label htmlFor="petType" className="form-label mb-0">
-                      Type
+                {petFields.map((field) => (
+                  <div key={field.name} className={field.col}>
+                    <label htmlFor={field.name} className="form-label mb-0">
+                      {field.label}
                     </label>
-                    <input type="text" className="form-control" id="petType" />
+                    <input
+                      type={field.type}
+                      className="form-control"
+                      id={field.name}
+                      name={field.name}
+                      value={form[field.name] || ""}
+                      onChange={handleChange}
+                    />
                   </div>
-                  <div className="col-md-6 mt-3">
-                    <label htmlFor="petBreed" className="form-label mb-0">
-                      Breed
-                    </label>
-                    <input type="text" className="form-control" id="petBreed" />
-                  </div>
-                </div>
+                ))}
 
                 <div className="col-12 mt-3">
                   <label htmlFor="petDescription" className="form-label mb-0">
@@ -268,27 +123,27 @@ export default function SignUpView() {
                   <textarea
                     className="form-control"
                     id="petDescription"
+                    name="petDescription"
                     rows="2"
+                    value={form.petDescription || ""}
+                    onChange={handleChange}
                   ></textarea>
-                </div>
-
-                <div className="col-12 mt-3">
-                  <label htmlFor="petDOB" className="form-label mb-0">
-                    Pet Date of Birth
-                  </label>
-                  <input type="date" className="form-control" id="petDOB" />
                 </div>
               </div>
             )}
 
             <div className="col-12 text-center">
-              <button type="submit" className="btn btn-secondary mt-4" onClick={handleSubmit}>
+              <button type="submit" className="btn btn-secondary mt-4">
                 Sign Up
               </button>
             </div>
           </form>
 
-          <p className="text-center mb-0">Already have an account?</p>
+          <p className="text-center mb-0">
+            <Link to="/signin" className="text-danger fw-bold small">
+              Already have an account?
+            </Link>
+          </p>
         </div>
       </section>
     </>

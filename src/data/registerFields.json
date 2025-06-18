@@ -1,0 +1,20 @@
+{
+    "formFields" : [
+    { "name": "name", "label": "Name", "type": "text", "col": "col-md-6" },
+    { "name": "surname", "label": "Surname", "type": "text", "col": "col-md-6" },
+    { "name": "username", "label": "Username", "type": "text", "col": "col-12" },
+    { "name": "password", "label": "Password", "type": "password", "col": "col-6" },
+    { "name": "confirmPassword", "label": "Confirm Password", "type": "password", "col": "col-6" },
+    { "name": "email", "label": "Email", "type": "email", "col": "col-12" },
+    { "name": "phone", "label": "Phone Number", "type": "tel", "col": "col-12" },
+    { "name": "dob", "label": "Date of Birth", "type": "date", "col": "col-12" },
+    { "name": "address", "label": "Address", "type": "text", "col": "col-md-6" },
+    { "name": "city", "label": "City", "type": "text", "col": "col-md-6" }
+  ],
+  "petFields" : [
+    { "name": "petName", "label": "Pet Name", "type": "text", "col": "col-12" },
+    { "name": "petType", "label": "Type", "type": "text", "col": "col-md-6 mt-3" },
+    { "name": "petBreed", "label": "Breed", "type": "text", "col": "col-md-6 mt-3" },
+    { "name": "petDOB", "label": "Pet Date of Birth", "type": "date", "col": "col-12 mt-3" }
+  ]
+}
