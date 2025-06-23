@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/static/css/main.31a7fa25.css",
+    "main.js": "/static/js/main.b0ea59f2.js",
+    "static/media/welcome_dog.jpg": "/static/media/welcome_dog.b12eb8f02be76bc454f7.jpg",
+    "static/media/Comfortaa-VariableFont_wght.ttf": "/static/media/Comfortaa-VariableFont_wght.4d2ab5de91c4d193a69f.ttf",
+    "static/media/bootstrap-icons.woff?": "/static/media/bootstrap-icons.39795c0b4513de014cf8.woff",
+    "static/media/bootstrap-icons.woff2?": "/static/media/bootstrap-icons.b7bcc075b395c14ce8c2.woff2",
+    "index.html": "/index.html",
+    "main.31a7fa25.css.map": "/static/css/main.31a7fa25.css.map",
+    "main.b0ea59f2.js.map": "/static/js/main.b0ea59f2.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.31a7fa25.css",
+    "static/js/main.b0ea59f2.js"
+  ]
+}

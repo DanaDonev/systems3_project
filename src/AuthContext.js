@@ -1,29 +1,22 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(null);
 
-  useEffect(() => {
-    fetch("http://localhost:3000/profile", {
-      credentials: "include",
-    })
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        setUser(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+  const login = (newToken) => setToken(newToken);
+  const logout = () => setToken(null);
+
+  const isAuthenticated = !!token;
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider value={{ token, login, logout, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );
 }
+
 
 export function useAuth() {
   return useContext(AuthContext);

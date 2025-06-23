@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import data from "../data/pets&categories.json";
+import { useAuth } from "../AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function ForumView({ pet, category }) {
   const [posts, setPosts] = useState([]);
@@ -20,8 +22,21 @@ export default function ForumView({ pet, category }) {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const pageSize = 5;
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const [enlargedPhoto, setEnlargedPhoto] = useState(null);
+
+  useEffect(() => {
+    console.log(isAuthenticated);
+    if (!isAuthenticated) {
+      navigate("/signin");
+    }
+  }, [isAuthenticated, navigate]);
+
+  // if (!isAuthenticated) {
+  //   return null; // Or a loading spinner
+  // }
 
   const fetchPosts = async () => {
     try {

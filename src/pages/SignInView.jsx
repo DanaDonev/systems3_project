@@ -1,17 +1,23 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-//import { useAuth } from "../AuthContext";
+import { useAuth } from "../AuthContext";
 import axios from "axios";
 import ForgotPassword from "./ForgotPassword";
 
 export default function SignInView() {
-
+  const [errors, setErrors] = useState({});
   const [showForgot, setShowForgot] = useState(false);
-
   const [form, setForm] = useState({ username: "", password: "" });
 
-  //const { setUser } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
+
+  const validate = () => {
+    const newErrors = {};
+    if (!form.username) newErrors.username = "Username is required";
+    if (!form.password) newErrors.password = "Password is required";
+    return newErrors;
+  };
 
   const handleChange = (e) => {
     setForm((prev) => ({
@@ -22,7 +28,11 @@ export default function SignInView() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     try {
       const res = await axios.post(
         "http://88.200.63.148:5006/users/signin",
@@ -32,35 +42,16 @@ export default function SignInView() {
         }
       );
 
-      if (res.status === 200) {
-        //const profileRes = await axios.get("http://88.200.63.148:5006/profile", {
-        //  withCredentials: true,
-        //});
-        //const profile = profileRes.data;
-        //setUser(profile); // Uncomment if using AuthContext
+      console.log(res.data);
+      if (res.status === 200 && res.data.success) {
+        const token = res.data.token;
+        login(token); // Store token in context state
         navigate("/forum");
       }
     } catch (err) {
       alert("Invalid username or password");
+      console.log(err);
     }
-
-    // const res = await fetch("http://localhost:3000/signin", {
-    //   method: "POST",
-    //   credentials: "include",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ username, password }),
-    // });
-
-    // if (res.ok) {
-    //   const profileRes = await fetch("http://localhost:3000/profile", {
-    //     credentials: "include",
-    //   });
-    //   const profile = await profileRes.json();
-    //   setUser(profile);
-    //   navigate("/forum");
-    // } else {
-    //   alert("Invalid username or password");
-    // }
   };
 
   return (
@@ -79,12 +70,17 @@ export default function SignInView() {
               </label>
               <input
                 type="text"
-                className="form-control"
+                className={`form-control${
+                  errors.username ? " is-invalid" : ""
+                }`}
                 id="inputUsername"
                 name="username"
                 value={form.username}
                 onChange={handleChange}
               />
+              {errors.username && (
+                <div className="invalid-feedback">{errors.username}</div>
+              )}
             </div>
             <div className="col-12">
               <label htmlFor="inputPassword" className="form-label mb-0">
@@ -92,12 +88,17 @@ export default function SignInView() {
               </label>
               <input
                 type="password"
-                className="form-control"
+                className={`form-control${
+                  errors.password ? " is-invalid" : ""
+                }`}
                 id="inputPassword"
                 name="password"
                 value={form.password}
                 onChange={handleChange}
               />
+              {errors.password && (
+                <div className="invalid-feedback">{errors.password}</div>
+              )}
               <Link
                 to="#"
                 className="text-secondary small d-block text-end"
@@ -125,7 +126,7 @@ export default function SignInView() {
         </div>
       </section>
 
-      <ForgotPassword show={showForgot} onClose={() => setShowForgot(false)} /> 
+      <ForgotPassword show={showForgot} onClose={() => setShowForgot(false)} />
     </>
   );
 }

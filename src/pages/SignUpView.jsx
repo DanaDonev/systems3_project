@@ -2,6 +2,7 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import data from "../data/registerFields.json";
+import allowedCities from "../data/cities.json";
 
 export default function SignUpView() {
   const { formFields, petFields } = data;
@@ -20,7 +21,63 @@ export default function SignUpView() {
     city: "",
   });
 
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+
+  const validate = () => {
+    const newErrors = {};
+    formFields.forEach((field) => {
+      if (!form[field.name]) {
+        newErrors[field.name] = `${field.label} is required`;
+      }
+    });
+    if (userType === "petowner") {
+      petFields.forEach((field) => {
+        if (!form[field.name]) {
+          newErrors[field.name] = `${field.label} is required`;
+        }
+      });
+    }
+    if (form.email && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(form.email)) {
+      newErrors.email = "Invalid email address";
+    }
+    if (form.password !== form.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+    if (form.password && form.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    }
+    if (
+      form.password &&
+      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(form.password)
+    ) {
+      newErrors.password =
+        "Password must contain a digit, a lowercase and an uppercase letter";
+    }
+    if (form.phone && !/^\d{9}$/.test(form.phone)) {
+      newErrors.phone = "Phone number must be exactly 9 digits";
+    }
+    if (form.dob) {
+      const dobDate = new Date(form.dob);
+      const today = new Date();
+      if (dobDate >= today) {
+        newErrors.dob = "Date of birth must be in the past";
+      } else {
+        const minAge = 16;
+        const ageDifMs = today - dobDate;
+        const ageDate = new Date(ageDifMs);
+        const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+        if (age < minAge) {
+          newErrors.dob = `You must be at least ${minAge} years old`;
+        }
+      }
+    }
+    if (form.city && !allowedCities.includes(form.city)) {
+      newErrors.city = "Please select a valid city";
+    }
+    return newErrors;
+  };
+
   const handleChange = (e) => {
     setForm((prev) => ({
       ...prev,
@@ -30,7 +87,11 @@ export default function SignUpView() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     try {
       const res = await axios.post(
         "http://88.200.63.148:5006/users/register",
@@ -88,12 +149,17 @@ export default function SignUpView() {
                 </label>
                 <input
                   type={field.type}
-                  className="form-control"
+                  className={`form-control${
+                    errors[field.name] ? " is-invalid" : ""
+                  }`}
                   id={field.name}
                   name={field.name}
                   value={form[field.name] || ""}
                   onChange={handleChange}
                 />
+                {errors[field.name] && (
+                  <div className="invalid-feedback">{errors[field.name]}</div>
+                )}
               </div>
             ))}
 
@@ -107,12 +173,19 @@ export default function SignUpView() {
                     </label>
                     <input
                       type={field.type}
-                      className="form-control"
+                      className={`form-control${
+                        errors[field.name] ? " is-invalid" : ""
+                      }`}
                       id={field.name}
                       name={field.name}
                       value={form[field.name] || ""}
                       onChange={handleChange}
                     />
+                    {errors[field.name] && (
+                      <div className="invalid-feedback">
+                        {errors[field.name]}
+                      </div>
+                    )}
                   </div>
                 ))}
 
@@ -121,13 +194,20 @@ export default function SignUpView() {
                     Description
                   </label>
                   <textarea
-                    className="form-control"
+                    className={`form-control${
+                      errors.petDescription ? " is-invalid" : ""
+                    }`}
                     id="petDescription"
                     name="petDescription"
                     rows="2"
                     value={form.petDescription || ""}
                     onChange={handleChange}
                   ></textarea>
+                  {errors.petDescription && (
+                    <div className="invalid-feedback">
+                      {errors.petDescription}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

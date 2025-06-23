@@ -1,11 +1,10 @@
 const express = require("express")
 const users = express.Router()
 const DB = require('../db/dbConn.js')
+const jwt = require('jsonwebtoken')
+const authenticate = require('./authMiddleware.js')
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'access_secret';
 
-
-// TODO: implement sessions and cookies to keep the user logged in.
-// TODO: implement a logout route 
-// TODO: use encryption to store passwords (e.g., bcrypt)
 
 // get all users (for testing purposes, not recommended for production)
 users.get('/', async (req, res, next) => {
@@ -22,11 +21,6 @@ users.get('/', async (req, res, next) => {
 users.post('/signin', async (req, res, next) => {
     try {
         const { username, password } = req.body;
-        if (!username || !password) {
-            console.log("Please enter Username and Password!");
-            return res.status(400).send({ error: "Username and password required." });
-        }
-
         const queryResult = await DB.AuthUser(username);
 
         if (queryResult.length === 0) {
@@ -35,14 +29,15 @@ users.post('/signin', async (req, res, next) => {
         }
 
         const user = queryResult[0];
-
-        // FIXED: Correct field name for password is 'Password'
         if (password === user.Password) {
-            console.log("Login successful:", user);
-            return res.send({ logged: true, user });
+            const token = jwt.sign( { id: user.Id, username: user.Username },
+                ACCESS_TOKEN_SECRET,
+                { expiresIn: '15m' }) //change the secret key for github put it in env
+            console.log("Login successful:", token);
+            return res.json({success: true, token: token}); //
         } else {
             console.log("INCORRECT PASSWORD");
-            return res.status(401).send({ error: "Incorrect password." });
+            return res.json({success: false, message: "incorrect password"});
         }
     } catch (err) {
         console.error(err);
@@ -51,17 +46,11 @@ users.post('/signin', async (req, res, next) => {
     }
 });
 
-// REGISTER ROUTE
+// REGISTER ROUTE DONE?
 users.post('/register', async (req, res, next) => {
     console.log("Registering user...");
     try {
         const { name, surname, username, email, password, phone, dob, address, city } = req.body;
-
-        if (!name || !surname || !username || !password || !email || !phone || !dob || !address || !city) {
-            console.log("A field is missing!");
-            return res.status(400).send({ error: "All fields are required." });
-        }
-
         const queryResult = await DB.AddUser(name, surname, username, password, email, phone, dob, address, city);
 
         if (queryResult.affectedRows) {

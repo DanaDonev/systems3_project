@@ -8,7 +8,7 @@ const port = process.env.PORT || 5006
 // Import custom modules-controllers
 const users = require("./routes/users")
 //const listings = require("./routes/listings")
-//const forum = require("./routes/forum")
+const forum = require("./routes/forum")
 
 // Configurations
 app.use(cors()) // change later to cors({ methods: ["GET", "POST"] })
@@ -54,6 +54,7 @@ app.use(express.static(path.join(__dirname, "build")))
 //   });
 // });
 app.use('/users', users)
+app.use('/forum', forum) 
 
 // Routes
 app.get(/.*/, (req, res) => {

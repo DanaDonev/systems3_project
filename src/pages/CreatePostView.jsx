@@ -1,6 +1,7 @@
 //check the form!
 import { useState } from "react";
 import axios from "axios";
+import { useAuth } from "../AuthContext"
 
 export default function CreatePostView({ show, onClose, addPost }) {
   const [formData, setFormData] = useState({
@@ -36,6 +37,8 @@ export default function CreatePostView({ show, onClose, addPost }) {
     data.append("description", formData.description);
     data.append("vetOnly", formData.vetOnly);
     if (formData.photo) data.append("photo", formData.photo);
+
+   // const { token } = useAuth();
 
     try {
       const res = await axios.post(
