@@ -8,3 +8,4 @@ export { default as SignUpView } from "./SignUpView";
 export { default as CreatePostView } from "./CreatePostView";
 export { default as PageNotFound } from "./PageNotFound";
 export { default as ListingView } from "./ListingView";
+export { default as MakeListingView } from "./MakeListingView";

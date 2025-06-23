@@ -3,8 +3,8 @@ import { createBrowserRouter, useParams } from "react-router-dom";
 import FooterView from "./components/FooterView";
 import HeaderView from "./components/HeaderView";
 import { HomeView, AboutUsView, HowItWorksView, ForumView, ForumInitialView, SignInView, SignUpView, CreatePostView, PageNotFound, ListingView } from "./pages";
-
 import { protectedLoader } from "./loaders/authLoader";
+import MakeListingView from "./pages/MakeListingView";
 
 function ForumViewWrapper() {
   const { pet, category } = useParams();
@@ -74,6 +74,10 @@ const router = createBrowserRouter([
   {
     path: "/listing",
     element: <><HeaderView /><ListingView /><FooterView /></>,
+  },
+  {
+    path: "/createlisting",
+    element: <><HeaderView /><MakeListingView /><FooterView /></>,
   }
 ]);
 

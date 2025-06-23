@@ -32,6 +32,11 @@ export default function FooterView() {
                     Create an account
                   </Link>
                 </li>
+                <li>
+                  <Link to="/createlisting" className="text-black text-decoration-none">
+                    Create a listing
+                  </Link>
+                </li>
               </ul>
             </div>
 
