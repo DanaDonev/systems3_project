@@ -1,14 +1,18 @@
-import { createBrowserRouter, useParams } from "react-router-dom";
+import { createBrowserRouter, Outlet, useParams } from "react-router-dom";
 
 import FooterView from "./components/FooterView";
 import HeaderView from "./components/HeaderView";
 import { HomeView, AboutUsView, HowItWorksView, ForumView, ForumInitialView, SignInView, SignUpView, CreatePostView, PageNotFound, ListingView } from "./pages";
 import { protectedLoader } from "./loaders/authLoader";
 import MakeListingView from "./pages/MakeListingView";
+import ProfileView from "./pages/ProfileView";
+import ResetPasswordView from "./pages/ResetPasswordView";
+
 
 function ForumViewWrapper() {
   const { pet, category } = useParams();
-  return <ForumView pet={pet} category={category} />;
+  const categoryParam = category || "";
+  return <ForumView pet={pet} category={categoryParam} />;
 }
 
 const router = createBrowserRouter([
@@ -35,34 +39,12 @@ const router = createBrowserRouter([
   },
   {
     path: "/forum",
-    element: <><HeaderView /><ForumInitialView /><FooterView /></>,
-    // loader: protectedLoader,
-    // children: [
-    //   {
-    //     path: ":pet",
-    //     element: <ForumView />,
-    //     // loader: protectedLoader,
-    //   },
-    //   {
-    //     path: ":pet/:category",
-    //     element: <ForumView />,
-    //     // loader: protectedLoader,
-    //   },
-    // ],
-  },
-  {
-    path: "/forum/:pet",
-    element: <><HeaderView /><ForumView /><FooterView /></>,
-    // loader: protectedLoader,
-  },
-  {
-    path: "/forum/:pet/:category",
-    element: (
-      <>
-        <HeaderView /><ForumViewWrapper /><FooterView />
-      </>
-    ),
-    // loader: protectedLoader,
+    element: <><HeaderView /><Outlet /><FooterView /></>,
+    children: [
+      { index: true, element: <ForumInitialView /> },
+      { path: ":pet", element: <ForumViewWrapper /> },
+      { path: ":pet/:category", element: <ForumViewWrapper /> },
+    ],
   },
   {
     path: "/createpost", //pass values for pet and category as query parameters
@@ -78,6 +60,14 @@ const router = createBrowserRouter([
   {
     path: "/createlisting",
     element: <><HeaderView /><MakeListingView /><FooterView /></>,
+  },
+  {
+    path: "/profile",
+    element: <><HeaderView /><ProfileView /><FooterView /></>,
+  },
+  {
+    path: "/resetpassword/:token",
+    element: <><HeaderView /><ResetPasswordView/><FooterView /></>,
   }
 ]);
 

@@ -7,6 +7,7 @@ import ForgotPassword from "./ForgotPassword";
 export default function SignInView() {
   const [errors, setErrors] = useState({});
   const [showForgot, setShowForgot] = useState(false);
+  const [resetPassword, setResetPassword] = useState(false); // Added state for reset password
   const [form, setForm] = useState({ username: "", password: "" });
 
   const { login } = useAuth();
@@ -45,8 +46,10 @@ export default function SignInView() {
       console.log(res.data);
       if (res.status === 200 && res.data.success) {
         const token = res.data.token;
-        login(token); // Store token in context state
-        navigate("/forum");
+        const userRole = res.data.userRole; // Assuming the role is returned in the response
+        console.log("User role:", res.data);
+        login(token, userRole); // Store token in context state
+        navigate("/");
       }
     } catch (err) {
       alert("Invalid username or password");

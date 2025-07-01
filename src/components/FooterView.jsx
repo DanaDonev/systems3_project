@@ -43,7 +43,7 @@ export default function FooterView() {
             <div className="col-md-4 mb-3">
               <h5>Connect with Us</h5>
               <div className="d-flex align-items-center gap-3">
-                <Link to="mailto:info@petsitter.com" className="text-black">
+                <Link to="info.petsitter.si@gmail.com" className="text-black">
                   <i className="bi bi-envelope"></i>
                 </Link>
                 <Link to="#" className="text-black">

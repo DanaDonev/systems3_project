@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import data from "../data/pets&categories.json";
 
@@ -8,7 +9,15 @@ export default function ForumInitialView() {
   const [pet, setPet] = useState("");
   const [category, setCategory] = useState("");
 
-  const navigator = useNavigate();
+  const { token } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+      if (!token) {
+        navigate("/signin");
+      }
+      console.log("isAuthenticated:", token);
+    }, [token, navigate]);
 
   const handlePetChange = (e) => {
     setPet(e.target.id);
@@ -34,9 +43,9 @@ export default function ForumInitialView() {
     console.log("Selected pet:", pet, "Selected category:", category);
 
     if (!category) {
-      navigator(`/forum/${pet}`);
+      navigate(`/forum/${pet}`);
     } else {
-      navigator(`/forum/${pet}/${category}`);
+      navigate(`/forum/${pet}/${category}`);
     }
   };
 

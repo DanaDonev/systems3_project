@@ -9,7 +9,7 @@
     { "name": "phone", "label": "Phone Number", "type": "tel", "col": "col-12" },
     { "name": "dob", "label": "Date of Birth", "type": "date", "col": "col-12" },
     { "name": "address", "label": "Address", "type": "text", "col": "col-md-6" },
-    { "name": "city", "label": "City", "type": "text", "col": "col-md-6" }
+    { "name": "city", "label": "City", "type": "select", "col": "col-md-6" }
   ],
   "petFields" : [
     { "name": "petName", "label": "Pet Name", "type": "text", "col": "col-12" },

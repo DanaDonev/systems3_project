@@ -11,7 +11,7 @@ export default function ForgotPassword({ show, onClose }) {
     e.preventDefault();
     setError("");
     try {
-      await axios.post("http://88.200.63.148:5006/users/forgotpassword", { email });
+      await axios.post("http://88.200.63.148:5006/users/forgotpassword", {email});
       setSent(true);
     } catch (err) {
       setError("Failed to send reset email. Please try again.");

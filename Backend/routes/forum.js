@@ -11,10 +11,11 @@ forum.get("/posts/:pet/:category", async (req, res) => {
     const { pet, category } = req.params;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
+    const sortBy = req.query.sortBy || ""; 
     const offset = (page - 1) * limit;
 
     //const posts = await DB.getPostsByPetAndCategoryPaginated(pet, category, limit, offset);
-    const posts = await DB.getPostsFinal(pet, category, limit, offset);
+    const posts = await DB.getPostsFinal(pet, category, limit, offset, sortBy);
     const totalCount = await DB.countPostsByPetAndCategory(pet, category);
     const totalPages = Math.ceil(totalCount / limit);
 

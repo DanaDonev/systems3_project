@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function HeaderView() {
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   return (
     <>
       {/* <nav className="navbar bg-body-tertiary" style="margin-right: auto"> */}
@@ -33,10 +37,29 @@ export default function HeaderView() {
                 How it works?
               </Link>
             </li>
+            {isAuthenticated ? (
+              <li className="nav-item">
+                <Link className="nav-link text-black" to="/profile">
+                  My Profile
+                </Link>
+              </li>
+            ) : null}
             <li className="nav-item">
-              <Link className="btn btn-secondary" to="/signin">
-                Sign In
-              </Link>
+              {isAuthenticated ? (
+                <button
+                  className="btn btn-danger"
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link className="btn btn-secondary" to="/signin">
+                  Sign In
+                </Link>
+              )}
             </li>
           </ul>
         </div>

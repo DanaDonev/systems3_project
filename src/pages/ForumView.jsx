@@ -4,6 +4,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import data from "../data/pets&categories.json";
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
+import ForumPost from "../components/ForumPost";
 
 export default function ForumView({ pet, category }) {
   const [posts, setPosts] = useState([]);
@@ -22,33 +23,47 @@ export default function ForumView({ pet, category }) {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const pageSize = 5;
-  const { isAuthenticated } = useAuth();
+  const { token, role } = useAuth();
   const navigate = useNavigate();
 
   const [enlargedPhoto, setEnlargedPhoto] = useState(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [sortBy, setSortBy] = useState("newest");
 
   useEffect(() => {
-    console.log(isAuthenticated);
-    if (!isAuthenticated) {
+    const handleScroll = () => setShowScrollTop(window.scrollY > 200);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!token) {
       navigate("/signin");
     }
-  }, [isAuthenticated, navigate]);
-
-  // if (!isAuthenticated) {
-  //   return null; // Or a loading spinner
-  // }
+    console.log("isAuthenticated:", token);
+  }, [token, navigate]);
 
   const fetchPosts = async () => {
     try {
+      const categoryPath = category ? `/${category}` : "";
       const res = await axios.get(
-        `http://88.200.63.148:5006/forum/posts/${pet}/${category}?page=${page}&limit=${pageSize}`,
-        { withCredentials: true }
+        `http://88.200.63.148:5006/forum/posts/${pet}${categoryPath}?page=${page}&limit=${pageSize}&sortBy=${sortBy}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-
       const newPosts = res.data.posts || [];
-      setPosts((prev) => [...prev, ...newPosts]);
+      if (page === 1) {
+        setPosts(newPosts); // Replace on first page (after sort/filter change)
+      } else {
+        setPosts((prev) => [...prev, ...newPosts]); // Append on scroll
+      }
+      console.log("Fetched posts:", newPosts);
       setHasMore(page < res.data.totalPages);
-      setPage((prev) => prev + 1);
+      //setPage((prev) => prev + 1);
     } catch (err) {
       console.error("Failed to load posts:", err);
     }
@@ -57,15 +72,24 @@ export default function ForumView({ pet, category }) {
   useEffect(() => {
     // Reset when pet/category changes
     setPosts([]);
-    setPage(1);
     setHasMore(true);
-    fetchPosts();
     setFormData((prev) => ({
       ...prev,
       pet: pet || "", // pre-fill from URL
       category: category || "", // pre-fill from URL
     }));
-  }, [pet, category]);
+    if (page !== 1) {
+      setPage(1);
+    } else {
+      fetchPosts(); // <-- manually fetch if already on page 1
+    }
+  }, [pet, category, sortBy]);
+
+  useEffect(() => {
+    console.log(page);
+    fetchPosts();
+    // eslint-disable-next-line
+  }, [page]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -90,7 +114,11 @@ export default function ForumView({ pet, category }) {
       const res = await axios.post(
         `http://88.200.63.148:5006/forum/posts/${postId}`,
         { content: formData2 },
-        { withCredentials: true }
+        { withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       setFormData2("");
@@ -112,10 +140,13 @@ export default function ForumView({ pet, category }) {
       form.append("photo", formData.photo);
     }
 
+    console.log(token);
+    console.log("Submitting post with data:", formData);
+
     try {
       const res = await axios.post("http://88.200.63.148:5006/forum", form, {
         withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
       });
 
       if (!res.ok) {
@@ -140,9 +171,44 @@ export default function ForumView({ pet, category }) {
     }
   };
 
+  const handleDeletePost = async (postId) => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    try {
+      await axios.delete(`http://88.200.63.148:5006/forum/posts/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+      setPosts((prev) => prev.filter((p) => p.id !== postId));
+    } catch (err) {
+      alert("Failed to delete post.");
+    }
+  };
+
+  const handleDeleteComment = async (postId, commentId) => {
+    if (!window.confirm("Are you sure you want to delete this comment?"))
+      return;
+    try {
+      await axios.delete(
+        `http://88.200.63.148:5006/forum/posts/${postId}/comments/${commentId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id === postId
+            ? { ...p, comments: p.comments.filter((c) => c.id !== commentId) }
+            : p
+        )
+      );
+    } catch (err) {
+      alert("Failed to delete comment.");
+    }
+  };
+
   return (
     <div className="container my-5" style={{ maxWidth: "70%" }}>
-      {/* Enlarged photo overlay */}
       {enlargedPhoto && (
         <div
           style={{
@@ -164,8 +230,8 @@ export default function ForumView({ pet, category }) {
             src={enlargedPhoto}
             alt="Enlarged"
             style={{
-              maxWidth: "90vw",
-              maxHeight: "90vh",
+              maxWidth: "70vw",
+              maxHeight: "70vh",
               borderRadius: "12px",
               boxShadow: "0 0 24px #000",
             }}
@@ -174,21 +240,51 @@ export default function ForumView({ pet, category }) {
       )}
 
       <div className="p-3 rounded shadow">
-        <div className="d-flex align-items-center mb-4">
-          <h2 className="ms-auto mb-0">Posts</h2>
-          <button
-            type="button"
-            className="text-primary fw-bold fs-2 text-decoration-none ms-auto"
-            style={{ background: "none", border: "none" }}
-            onClick={() => setShowModal(true)}
+        <div
+          className="d-flex align-items-center mb-4"
+          style={{ position: "relative" }}
+        >
+          <div>
+            <select
+              className="form-select"
+              style={{ width: "150px" }}
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="newest" selected>
+                Newest
+              </option>
+              <option value="oldest">Oldest</option>
+              <option value="mostComments">Most Comments</option>
+              <option value="leastComments">Least Comments</option>
+            </select>
+          </div>
+          <h5
+            className="mb-0"
+            style={{
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)",
+              margin: 0,
+            }}
           >
-            +
-          </button>
+            Posts
+          </h5>
+          {!role || role !== "admin" ? (
+            <button
+              type="button"
+              className="text-primary fw-bold fs-2 text-decoration-none ms-auto"
+              style={{ background: "none", border: "none" }}
+              onClick={() => setShowModal(true)}
+            >
+              +
+            </button>
+          ) : null}
         </div>
 
         <InfiniteScroll
           dataLength={posts.length}
-          next={fetchPosts}
+          next={() => setPage((prev) => prev + 1)}
           hasMore={hasMore}
           loader={<p className="text-center my-3">Loading more posts...</p>}
           endMessage={
@@ -196,80 +292,16 @@ export default function ForumView({ pet, category }) {
           }
         >
           {posts.map((entry, index) => (
-            <div className="forum-entry mb-4" key={entry.id || index}>
-              <div className="d-flex justify-content-between">
-                <span>
-                  <strong>{entry.author?.username || "Anonymous"}</strong>
-                </span>
-                <span>{new Date(entry.timestamp).toLocaleDateString()}</span>
-              </div>
-
-              <div className="d-flex">
-                <div className="row w-100">
-                  <div className="col-md-4">
-                    <div className="forum-content-box">
-                      <img
-                        src={
-                          entry.photo
-                            ? `data:image/jpeg;base64,${entry.photo}`
-                            : "/default-placeholder.png"
-                        }
-                        alt="Post"
-                        className="w100"
-                        style={{ objectFit: "cover", borderRadius: "8px" }}
-                        onClick={() => {
-                          if (entry.photo) {
-                            setEnlargedPhoto(
-                              `data:image/jpeg;base64,${entry.photo}`
-                            );
-                          }
-                        }}
-                      />
-                      <p>{entry.description}</p>
-                    </div>
-                  </div>
-
-                  <div
-                    className="col-md-8 d-flex flex-column justify-content-start"
-                    style={{ maxHeight: "180px", overflow: "auto" }}
-                  >
-                    <p style={{ display: "inline" }}>
-                      <strong>Comments</strong>
-                    </p>
-                    <button
-                      type="button"
-                      className="text-primary fs-2 text-decoration-none ms-auto"
-                      style={{
-                        display: "inline",
-                        background: "none",
-                        border: "none",
-                      }}
-                      onClick={() => {
-                        setShowModal2(entry.id);
-                      }}
-                    >
-                      +
-                    </button>
-                    {entry.comments?.length > 0 ? (
-                      entry.comments.map((comment) => (
-                        <div key={comment.id} className="comment mb-2">
-                          <small className="fw-bold">
-                            {comment.username || "Anonymous"}
-                          </small>
-                          <small className="text-muted">
-                            | {new Date(comment.timestamp).toLocaleString()}{" "}
-                          </small>
-                          <br />
-                          {comment.content}
-                        </div>
-                      ))
-                    ) : (
-                      <p>No comments yet.</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ForumPost
+              key={entry.id || index}
+              entry={entry}
+              index={index}
+              setEnlargedPhoto={setEnlargedPhoto}
+              setShowModal2={setShowModal2}
+              isAdmin={role === "admin"}
+              onDeletePost={() => handleDeletePost(entry.id)}
+              onDeleteComment={handleDeleteComment}
+            />
           ))}
         </InfiniteScroll>
       </div>
@@ -465,6 +497,33 @@ export default function ForumView({ pet, category }) {
             </div>
           </div>
         </div>
+      )}
+      {/* Back to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          style={{
+            position: "fixed",
+            bottom: "30px",
+            right: "30px",
+            zIndex: 3000,
+            borderRadius: "50%",
+            width: "48px",
+            height: "48px",
+            background: "#fff",
+            border: "1px solid #ccc",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "1.5rem",
+            color: "#333",
+            cursor: "pointer",
+          }}
+          aria-label="Back to top"
+        >
+          <i className="bi bi-arrow-up"></i>
+        </button>
       )}
     </div>
   );

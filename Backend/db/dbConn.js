@@ -102,22 +102,32 @@ dataPool.getPostsWithCommentsAndUserByPetAndCategory = (pet, category, limit, of
     });
   });
 };
-
-dataPool.getPostsFinal = (pet, category, limit, offset) => {
+dataPool.getPostsFinal = (pet, category, limit, offset, sortBy) => {
   return new Promise((resolve, reject) => {
-    // Step 1: Get limited list of questions WITH author info
+    // Determine ORDER BY clause based on sortBy
+    let orderByClause = "Question.Timestamp DESC";
+    if (sortBy === "oldest") {
+      orderByClause = "Question.Timestamp ASC";
+    } else if (sortBy === "mostComments") {
+      orderByClause = "CommentCount DESC, Question.Timestamp DESC";
+    } else if (sortBy === "leastComments") {
+      orderByClause = "CommentCount ASC, Question.Timestamp DESC";
+    }
+    console.log("ORDER BY CLAUSE: " + orderByClause);
+    // Step 1: Get limited list of questions WITH author info and comment count
     const getQuestionsSQL = `
-      SELECT 
-        Question.*, 
-        User.Username AS AuthorUsername
-      FROM Question
-      JOIN User ON Question.UserId = User.Id
-      WHERE Question.Pet = ? AND Question.Category = ?
-      ORDER BY Question.Timestamp DESC
-      LIMIT ? OFFSET ?
-    `;
-
-    conn.query(getQuestionsSQL, [pet, category, limit, offset], (err, questions) => {
+  SELECT 
+    Question.*, 
+    User.Username AS AuthorUsername,
+    (SELECT COUNT(*) FROM Comment WHERE Comment.QId = Question.Id) AS CommentCount
+  FROM Question
+  JOIN User ON Question.UserId = User.Id
+  WHERE Question.Pet = ? AND Question.Category = ?
+  ORDER BY ${orderByClause}
+  LIMIT ${Number(limit)} OFFSET ${Number(offset)}
+`;
+conn.query(getQuestionsSQL, [pet, category], (err, questions) => {
+ 
       if (err) return reject(err);
       if (questions.length === 0) return resolve([]); // No posts found
 
@@ -148,7 +158,7 @@ dataPool.getPostsFinal = (pet, category, limit, offset) => {
             id: q.Id,
             timestamp: q.Timestamp,
             description: q.QDescription,
-            photo: q.Photo.toString('base64'),
+            photo: q.Photo ? q.Photo.toString('base64') : null,
             type: q.Type,
             pet: q.Pet,
             category: q.Category,
@@ -210,8 +220,34 @@ dataPool.createPost = (postData) => {
   });
 };
 
+dataPool.addListing = ({ periodFrom, periodTo, petType, description, price, userId }) => {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      INSERT INTO Listing (PeriodFrom, PeriodTo, PetType,Description, Price,  UserId)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    conn.query(sql, [periodFrom, periodTo, petType,description, price,  userId], (err, result) => {
+      if (err) return reject(err);
+      resolve(result);
+    });
+  });
+};
 
 
+dataPool.allListings = () => {
+  return new Promise((resolve, reject) => {
+    conn.query(`
+      SELECT Listing.*, User.City
+      FROM Listing
+      JOIN User ON Listing.UserId = User.Id
+    `, (err, res) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(res);
+    });
+  });
+};
 // get posts by pet and category
 // dataPool.getPostsByPetAndCategory = (pet, category) => {
 //   return new Promise((resolve, reject) => {

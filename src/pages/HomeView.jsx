@@ -9,7 +9,7 @@ export default function HomeView() {
         <section className="text-center mb-5 pt-5">
           <h1 className="pt-4">Welcome to the website for petsitting!</h1>
           <div>
-            <button className="button1" onClick={() => navigate("/listings")}>
+            <button className="button1" onClick={() => navigate("/listing")}>
               Find a PetSitter
             </button>
             <button className="button1" onClick={() => navigate("/register")}>
