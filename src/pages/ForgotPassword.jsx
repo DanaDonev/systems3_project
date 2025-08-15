@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function ForgotPassword({ show, onClose }) {
   const [email, setEmail] = useState("");
@@ -11,7 +12,7 @@ export default function ForgotPassword({ show, onClose }) {
     e.preventDefault();
     setError("");
     try {
-      await axios.post("http://88.200.63.148:5006/users/forgotpassword", {email});
+      await axios.post(`${API_URL}/users/forgotpassword`, { email });
       setSent(true);
     } catch (err) {
       setError("Failed to send reset email. Please try again.");
@@ -51,7 +52,8 @@ export default function ForgotPassword({ show, onClose }) {
           <div className="modal-body">
             {sent ? (
               <div className="alert alert-success">
-                If an account with that email exists, a reset link has been sent.
+                If an account with that email exists, a reset link has been
+                sent.
               </div>
             ) : (
               <>
@@ -67,7 +69,9 @@ export default function ForgotPassword({ show, onClose }) {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-                {error && <div className="alert alert-danger mt-2">{error}</div>}
+                {error && (
+                  <div className="alert alert-danger mt-2">{error}</div>
+                )}
               </>
             )}
             {!sent && (

@@ -3,19 +3,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import axios from "axios";
 import ForgotPassword from "./ForgotPassword";
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function SignInView() {
   const [errors, setErrors] = useState({});
   const [showForgot, setShowForgot] = useState(false);
-  const [resetPassword, setResetPassword] = useState(false); // Added state for reset password
-  const [form, setForm] = useState({ username: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const validate = () => {
     const newErrors = {};
-    if (!form.username) newErrors.username = "Username is required";
+    if (!form.email) newErrors.email = "Email is required";
     if (!form.password) newErrors.password = "Password is required";
     return newErrors;
   };
@@ -35,24 +35,21 @@ export default function SignInView() {
       return;
     }
     try {
-      const res = await axios.post(
-        "http://88.200.63.148:5006/users/signin",
-        form,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axios.post(`${API_URL}/users/signin`, form, {
+        withCredentials: true,
+      });
 
       console.log(res.data);
       if (res.status === 200 && res.data.success) {
         const token = res.data.token;
-        const userRole = res.data.userRole; // Assuming the role is returned in the response
+        const userRole = res.data.userRole;
+        const username = res.data.username;
         console.log("User role:", res.data);
-        login(token, userRole); // Store token in context state
+        login(token, userRole, username);
         navigate("/");
       }
     } catch (err) {
-      alert("Invalid username or password");
+      alert("Invalid email or password! Please try again.");
       console.log(err);
     }
   };
@@ -68,21 +65,19 @@ export default function SignInView() {
 
           <form className="row g-3" onSubmit={handleSubmit}>
             <div className="col-12">
-              <label htmlFor="inputUsername" className="form-label mb-0">
-                Username
+              <label htmlFor="inputEmail" className="form-label mb-0">
+                Email
               </label>
               <input
                 type="text"
-                className={`form-control${
-                  errors.username ? " is-invalid" : ""
-                }`}
-                id="inputUsername"
-                name="username"
-                value={form.username}
+                className={`form-control${errors.email ? " is-invalid" : ""}`}
+                id="inputEmail"
+                name="email"
+                value={form.email}
                 onChange={handleChange}
               />
-              {errors.username && (
-                <div className="invalid-feedback">{errors.username}</div>
+              {errors.email && (
+                <div className="invalid-feedback">{errors.email}</div>
               )}
             </div>
             <div className="col-12">

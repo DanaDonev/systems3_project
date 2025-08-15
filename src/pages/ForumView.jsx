@@ -4,12 +4,19 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import data from "../data/pets&categories.json";
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
-import ForumPost from "../components/ForumPost";
+import { ForumPost, CreatePostView } from "../components";
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function ForumView({ pet, category }) {
   const [posts, setPosts] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [showModal2, setShowModal2] = useState(-1);
+  const [sortBy, setSortBy] = useState("newest");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const pageSize = 5;
+  const [isVet, setIsVet] = useState(false);
+
+  const [createPostModal, setCreatePostModal] = useState(false);
+  const [createCommentModal, setCreateCommentModal] = useState(-1);
   const [formData, setFormData] = useState({
     pet: "",
     category: "",
@@ -19,35 +26,42 @@ export default function ForumView({ pet, category }) {
   });
 
   const [formData2, setFormData2] = useState("");
-
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const pageSize = 5;
-  const { token, role } = useAuth();
-  const navigate = useNavigate();
-
   const [enlargedPhoto, setEnlargedPhoto] = useState(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [sortBy, setSortBy] = useState("newest");
 
-  useEffect(() => {
-    const handleScroll = () => setShowScrollTop(window.scrollY > 200);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const { token, role, username } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!token) {
       navigate("/signin");
     }
     console.log("isAuthenticated:", token);
-  }, [token, navigate]);
+
+    const fetchIsVet = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/users/checkifvet`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setIsVet(res.data); // assuming res.data is boolean
+        console.log("User is vet:", res.data);
+      } catch (err) {
+        console.error("Failed to check if user is vet:", err);
+        setIsVet(false);
+      }
+    };
+    fetchIsVet();
+
+    const handleScroll = () => setShowScrollTop(window.scrollY > 200);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const fetchPosts = async () => {
     try {
       const categoryPath = category ? `/${category}` : "";
       const res = await axios.get(
-        `http://88.200.63.148:5006/forum/posts/${pet}${categoryPath}?page=${page}&limit=${pageSize}&sortBy=${sortBy}`,
+        `${API_URL}/forum/posts/${pet}${categoryPath}?page=${page}&limit=${pageSize}&sortBy=${sortBy}`,
         {
           withCredentials: true,
           headers: {
@@ -57,20 +71,18 @@ export default function ForumView({ pet, category }) {
       );
       const newPosts = res.data.posts || [];
       if (page === 1) {
-        setPosts(newPosts); // Replace on first page (after sort/filter change)
+        setPosts(newPosts);
       } else {
-        setPosts((prev) => [...prev, ...newPosts]); // Append on scroll
+        setPosts((prev) => [...prev, ...newPosts]);
       }
       console.log("Fetched posts:", newPosts);
       setHasMore(page < res.data.totalPages);
-      //setPage((prev) => prev + 1);
     } catch (err) {
       console.error("Failed to load posts:", err);
     }
   };
 
   useEffect(() => {
-    // Reset when pet/category changes
     setPosts([]);
     setHasMore(true);
     setFormData((prev) => ({
@@ -81,14 +93,13 @@ export default function ForumView({ pet, category }) {
     if (page !== 1) {
       setPage(1);
     } else {
-      fetchPosts(); // <-- manually fetch if already on page 1
+      fetchPosts();
     }
   }, [pet, category, sortBy]);
 
   useEffect(() => {
-    console.log(page);
+    console.log("posle kreranjeto" + page);
     fetchPosts();
-    // eslint-disable-next-line
   }, [page]);
 
   const handleChange = (e) => {
@@ -108,13 +119,15 @@ export default function ForumView({ pet, category }) {
     if (!formData2.trim()) return;
 
     try {
-      // Find the post to comment on (for demo, use the first post)
-      const postId = showModal2;
+      const postId = createCommentModal;
+
+      fetchPosts();
 
       const res = await axios.post(
-        `http://88.200.63.148:5006/forum/posts/${postId}`,
+        `${API_URL}/forum/posts/${postId}`,
         { content: formData2 },
-        { withCredentials: true,
+        {
+          withCredentials: true,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -122,7 +135,7 @@ export default function ForumView({ pet, category }) {
       );
 
       setFormData2("");
-      setShowModal2(-1);
+      setCreateCommentModal(-1);
     } catch (err) {
       console.error("Failed to post comment:", err);
     }
@@ -140,41 +153,36 @@ export default function ForumView({ pet, category }) {
       form.append("photo", formData.photo);
     }
 
-    console.log(token);
-    console.log("Submitting post with data:", formData);
+    console.log("Submitting form vleguva vo handle submit", formData);
+
+    setCreatePostModal(false);
+    setFormData({
+      description: "",
+      photo: null,
+      vetOnly: false,
+    });
+    if (page !== 1) setPage(1);
+    else fetchPosts();
 
     try {
-      const res = await axios.post("http://88.200.63.148:5006/forum", form, {
+      const res = await axios.post(`${API_URL}/forum`, form, {
         withCredentials: true,
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
       });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to create post");
-      }
-      const result = await res.json();
-      console.log("Post created:", result);
-
-      setPosts((prev) => [res.data, ...prev]);
-      setFormData({
-        pet: "",
-        category: "",
-        description: "",
-        photo: "",
-        vetOnly: false,
-      });
-      setShowModal(false);
-      setShowModal2(false);
     } catch (err) {
       console.error("Failed to create post:", err);
     }
+
+    console.log("Post created successfully");
   };
 
   const handleDeletePost = async (postId) => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
     try {
-      await axios.delete(`http://88.200.63.148:5006/forum/posts/${postId}`, {
+      await axios.delete(`${API_URL}/forum/posts/${postId}`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
@@ -188,13 +196,10 @@ export default function ForumView({ pet, category }) {
     if (!window.confirm("Are you sure you want to delete this comment?"))
       return;
     try {
-      await axios.delete(
-        `http://88.200.63.148:5006/forum/posts/${postId}/comments/${commentId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        }
-      );
+      await axios.delete(`${API_URL}/forum/comments/${commentId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
       setPosts((prev) =>
         prev.map((p) =>
           p.id === postId
@@ -275,7 +280,7 @@ export default function ForumView({ pet, category }) {
               type="button"
               className="text-primary fw-bold fs-2 text-decoration-none ms-auto"
               style={{ background: "none", border: "none" }}
-              onClick={() => setShowModal(true)}
+              onClick={() => setCreatePostModal(true)}
             >
               +
             </button>
@@ -297,17 +302,21 @@ export default function ForumView({ pet, category }) {
               entry={entry}
               index={index}
               setEnlargedPhoto={setEnlargedPhoto}
-              setShowModal2={setShowModal2}
+              setCreateCommentModal={setCreateCommentModal}
               isAdmin={role === "admin"}
+              username={username}
+              showAddComment={entry.type === 1 ? isVet : true} // use the boolean state here
               onDeletePost={() => handleDeletePost(entry.id)}
-              onDeleteComment={handleDeleteComment}
+              onDeleteComment={(commentId) =>
+                handleDeleteComment(entry.id, commentId)
+              }
             />
           ))}
         </InfiniteScroll>
       </div>
 
       {/* Create Post Modal */}
-      {showModal && (
+      {createPostModal && (
         <div
           className="modal fade show"
           style={{
@@ -326,131 +335,133 @@ export default function ForumView({ pet, category }) {
                   type="button"
                   className="text-primary fw-bold fs-2 ms-auto"
                   style={{ background: "none", border: "none" }}
-                  onClick={() => setShowModal(false)}
+                  onClick={() => setCreatePostModal(false)}
                 >
                   &times;
                 </button>
               </div>
               <hr className="my-1" />
-              <div className="modal-body">
-                <div className="d-flex gap-3 mb-3">
-                  <div className="flex-fill">
-                    <label className="form-label">Pet</label>
-                    <select
-                      className="form-select"
-                      name="pet"
-                      value={formData.pet}
-                      onChange={handleChange}
-                    >
-                      <option value="" disabled selected>
-                        select a pet
-                      </option>
-                      {data.pets.map((petOption) => (
-                        <option key={petOption.id} value={petOption.id}>
-                          {petOption.id}
+              <form onSubmit={handleSubmit}>
+                <div className="modal-body">
+                  <div className="d-flex gap-3 mb-3">
+                    <div className="flex-fill">
+                      <label className="form-label">Pet</label>
+                      <select
+                        className="form-select"
+                        name="pet"
+                        value={formData.pet}
+                        onChange={handleChange}
+                      >
+                        <option value="" disabled selected>
+                          select a pet
                         </option>
-                      ))}
-                    </select>
+                        {data.pets.map((petOption) => (
+                          <option key={petOption.id} value={petOption.id}>
+                            {petOption.id}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="flex-fill">
+                      <label className="form-label">Category</label>
+                      <select
+                        className="form-select"
+                        name="category"
+                        value={formData.category}
+                        onChange={handleChange}
+                      >
+                        <option value="" disabled selected>
+                          select a category
+                        </option>
+                        {data.categories.map((CategoryOption) => (
+                          <option
+                            key={CategoryOption.id}
+                            value={CategoryOption.id}
+                          >
+                            {CategoryOption.id}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
-                  <div className="flex-fill">
-                    <label className="form-label">Category</label>
-                    <select
-                      className="form-select"
-                      name="category"
-                      value={formData.category}
+                  <div className="mb-3">
+                    <label className="form-label">Description</label>
+                    <textarea
+                      className="form-control"
+                      rows="3"
+                      name="description"
+                      value={formData.description}
                       onChange={handleChange}
-                    >
-                      <option value="" disabled selected>
-                        select a category
-                      </option>
-                      {data.categories.map((CategoryOption) => (
-                        <option
-                          key={CategoryOption.id}
-                          value={CategoryOption.id}
-                        >
-                          {CategoryOption.id}
-                        </option>
-                      ))}
-                    </select>
+                      placeholder="Write your post..."
+                    ></textarea>
                   </div>
-                </div>
 
-                <div className="mb-3">
-                  <label className="form-label">Description</label>
-                  <textarea
-                    className="form-control"
-                    rows="3"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    placeholder="Write your post..."
-                  ></textarea>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Photo</label>
-                  <input
-                    type="file"
-                    className="form-control"
-                    accept="image/*"
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        photo: e.target.files[0],
-                      }))
-                    }
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label d-block">Type</label>
-                  <div className="form-check form-check-inline">
+                  <div className="mb-3">
+                    <label className="form-label">Photo</label>
                     <input
-                      className="form-check-input"
-                      type="radio"
-                      name="vetOnly"
-                      id="vetYes"
-                      checked={formData.vetOnly === true}
-                      onChange={() =>
-                        setFormData((prev) => ({ ...prev, vetOnly: true }))
+                      type="file"
+                      className="form-control"
+                      accept="image/*"
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          photo: e.target.files[0],
+                        }))
                       }
                     />
-                    <label className="form-check-label" htmlFor="vetYes">
-                      Vet Only
-                    </label>
                   </div>
-                  <div className="form-check form-check-inline">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="vetOnly"
-                      id="vetNo"
-                      checked={formData.vetOnly === false}
-                      onChange={() =>
-                        setFormData((prev) => ({ ...prev, vetOnly: false }))
-                      }
-                    />
-                    <label className="form-check-label" htmlFor="vetNo">
-                      All
-                    </label>
-                  </div>
-                </div>
 
-                <button
-                  className="btn btn-secondary mt-4 w-100"
-                  onClick={handleSubmit}
-                >
-                  Post
-                </button>
-              </div>
+                  <div className="mb-3">
+                    <label className="form-label d-block">Type</label>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="vetOnly"
+                        id="vetYes"
+                        checked={formData.vetOnly === true}
+                        onChange={() =>
+                          setFormData((prev) => ({ ...prev, vetOnly: true }))
+                        }
+                      />
+                      <label className="form-check-label" htmlFor="vetYes">
+                        Vet Only
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="vetOnly"
+                        id="vetNo"
+                        checked={formData.vetOnly === false}
+                        onChange={() =>
+                          setFormData((prev) => ({ ...prev, vetOnly: false }))
+                        }
+                      />
+                      <label className="form-check-label" htmlFor="vetNo">
+                        All
+                      </label>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="btn btn-secondary mt-4 w-100"
+                  >
+                    Post
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
       )}
 
       {/* {Create Comment Modal} */}
-      {showModal2 >= 0 && (
+      {createCommentModal >= 0 && (
         <div
           className="modal fade show"
           style={{
@@ -469,7 +480,7 @@ export default function ForumView({ pet, category }) {
                   type="button"
                   className="text-primary fw-bold fs-2 ms-auto"
                   style={{ background: "none", border: "none" }}
-                  onClick={() => setShowModal2(-1)}
+                  onClick={() => setCreateCommentModal(-1)}
                 >
                   &times;
                 </button>
@@ -498,6 +509,7 @@ export default function ForumView({ pet, category }) {
           </div>
         </div>
       )}
+
       {/* Back to Top Button */}
       {showScrollTop && (
         <button

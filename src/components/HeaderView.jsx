@@ -7,11 +7,9 @@ export default function HeaderView() {
   const navigate = useNavigate();
   return (
     <>
-      {/* <nav className="navbar bg-body-tertiary" style="margin-right: auto"> */}
       <nav className="navbar bg-body-secondary">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/">
-            {/* <img src="../Frontend/Images/logo.png" alt="Logo" className="d-inline-block align-text-bottom" /> */}
             <img
               src="/logo.png"
               alt="Logo"
@@ -48,9 +46,9 @@ export default function HeaderView() {
               {isAuthenticated ? (
                 <button
                   className="btn btn-danger"
-                  onClick={() => {
+                  onClick={async () => {
+                    await navigate("/");
                     logout();
-                    navigate("/");
                   }}
                 >
                   Logout

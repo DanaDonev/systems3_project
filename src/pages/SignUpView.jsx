@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import data from "../data/registerFields.json";
 import allowedCities from "../data/cities.json";
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function SignUpView() {
   const { formFields, petFields } = data;
@@ -114,14 +115,10 @@ export default function SignUpView() {
       }
 
       console.log(payload);
-      const res = await axios.post(
-        "http://88.200.63.148:5006/users/register",
-        payload,
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const res = await axios.post(`${API_URL}/users/register`, payload, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       console.log(payload);
       if (res.status === 201) {
         alert("Registration successful!");

@@ -1,20 +1,20 @@
 {
   "pets": [
-    { "id": "dog", "img": "/Images/dog.png" },
-    { "id": "cat", "img": "/Images/cat (2).png" },
-    { "id": "hamster", "img": "/Images/hamster.png" },
-    { "id": "parrot", "img": "/Images/parrot.png" },
-    { "id": "snake", "img": "/Images/snake (1).png" },
-    { "id": "bunny", "img": "/Images/easter-bunny.png" },
-    { "id": "lizard", "img": "/Images/lizard.png" },
-    { "id": "spider", "img": "/Images/spider.png" },
-    { "id": "unicorn", "img": "/Images/unicorn.png" }
+    { "id": "dog", "img": "/Images/dog.png", "name": "Dog" },
+    { "id": "cat", "img": "/Images/cat (2).png", "name": "Cat" },
+    { "id": "hamster", "img": "/Images/hamster.png", "name": "Hamster" },
+    { "id": "parrot", "img": "/Images/parrot.png", "name": "Parrot" },
+    { "id": "snake", "img": "/Images/snake (1).png", "name": "Snake" },
+    { "id": "bunny", "img": "/Images/easter-bunny.png", "name": "Bunny" },
+    { "id": "lizard", "img": "/Images/lizard.png", "name": "Lizard" },
+    { "id": "spider", "img": "/Images/spider.png", "name": "Spider" },
+    { "id": "unicorn", "img": "/Images/unicorn.png", "name": "Other" }
   ],
   "categories": [
-    { "id": "care", "img": "/Images/pet-care.png" },
-    { "id": "health", "img": "/Images/healthcare.png" },
-    { "id": "food", "img": "/Images/pet-food.png" },
-    { "id": "bath", "img": "/Images/grooming.png" },
-    { "id": "training", "img": "/Images/walk-the-pet.png" }
+    { "id": "care", "img": "/Images/pet-care.png", "name": "Pet Care" },
+    { "id": "health", "img": "/Images/healthcare.png", "name": "Health" },
+    { "id": "food", "img": "/Images/pet-food.png", "name": "Food" },
+    { "id": "bath", "img": "/Images/grooming.png", "name": "Bath" },
+    { "id": "training", "img": "/Images/walk-the-pet.png", "name": "Training" }
   ]
 }

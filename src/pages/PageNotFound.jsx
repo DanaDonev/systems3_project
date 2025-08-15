@@ -4,7 +4,7 @@ export default function PageNotFound() {
     return (
         <div>
             404 NOT FOUND
-            <Link to="/">Home</Link> {/* doesnt going to refresh the page */}
+            <Link to="/">Home</Link>
         </div>
     );
 }

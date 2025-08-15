@@ -1,20 +1,30 @@
-import { useState } from "react";
-import data from '../data/howToSteps.json';
+import {useState} from 'react';
+import stepsData from '../data/howToSteps.json';
+
+function Step({number, title, children}) {
+  return (
+    <div className="step mb-3">
+      <div className="step-title fw-bold">
+        {number}. {title}
+      </div>
+      <p>{children}</p>
+    </div>
+  );
+}
 
 export default function HowItWorksView() {
-
-  let [toggle, setToggle] = useState("petsitting");
-  const steps = data;
+  let [toggle, setToggle] = useState('petsitting');
+  const steps = stepsData;
 
   return (
     <>
-      <div className="container my-5" style={{ maxWidth: "70%" }}>
+      <div className="container my-5" style={{maxWidth: '70%'}}>
         <div className="p-3 rounded shadow">
           <h2 className="text-center">How It Works</h2>
 
           <div className="d-flex justify-content-center mb-4">
             <div className="btn-group" role="group" aria-label="Help type">
-              {["petsitting", "forum"].map((step) => (
+              {['petsitting', 'forum'].map(step => (
                 <>
                   <input
                     type="radio"
@@ -26,7 +36,7 @@ export default function HowItWorksView() {
                     onChange={() => setToggle(step)}
                   />
                   <label className="btn btn-outline-secondary" htmlFor={step}>
-                    {step === "petsitting" ? "Pet Sitting" : "Forum"}
+                    {step === 'petsitting' ? 'Pet Sitting' : 'Forum'}
                   </label>
                 </>
               ))}
@@ -41,22 +51,9 @@ export default function HowItWorksView() {
             ))}
           </div>
 
-          <p className="text-muted small mt-4">
-            Simple. Safe. Stress-free — for you and your pet.
-          </p>
+          <p className="text-muted small mt-4">Simple. Safe. Stress-free for you and your pet.</p>
         </div>
       </div>
     </>
-  );
-}
-
-function Step({ number, title, children }) {
-  return (
-    <div className="step mb-3">
-      <div className="step-title fw-bold">
-        {number}. {title}
-      </div>
-      <p>{children}</p>
-    </div>
   );
 }

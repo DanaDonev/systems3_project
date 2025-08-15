@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rate Your Petsitter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    .stars {
+      display: inline-block;
+      font-size: 40px;
+      cursor: pointer;
+      color: #ccc;
+    }
+    .stars .filled {
+      color: gold;
+    }
+    .thank-you {
+      margin-top: 20px;
+      font-size: 18px;
+      color: green;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Rate Your Petsitter</h2>
+  <p>How would you rate your experience?</p>
+
+  <div id="starContainer" class="stars">
+    <span data-value="1">★</span>
+    <span data-value="2">★</span>
+    <span data-value="3">★</span>
+    <span data-value="4">★</span>
+    <span data-value="5">★</span>
+  </div>
+
+  <div id="thankYou" class="thank-you">Thank you for your rating! 🐾</div>
+
+  <script>
+    const stars = document.querySelectorAll('#starContainer span');
+    const thankYou = document.getElementById('thankYou');
+    const dealId = new URLSearchParams(window.location.search).get("dealId"); // if passed in URL
+
+    stars.forEach(star => {
+      star.addEventListener('click', async () => {
+        const rating = star.getAttribute('data-value');
+
+        // Fill stars
+        stars.forEach(s => {
+          if (s.getAttribute('data-value') <= rating) {
+            s.classList.add('filled');
+          } else {
+            s.classList.remove('filled');
+          }
+        });
+
+        // Send rating to server (optional, demo only)
+        await fetch(`/api/submit-rating`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dealId, rating })
+        });
+
+        // Show thank you message
+        thankYou.style.display = 'block';
+      });
+    });
+  </script>
+
+</body>
+</html>

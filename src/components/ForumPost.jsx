@@ -1,22 +1,26 @@
-import React from "react";
-
 export default function ForumPost({
   entry,
   index,
   setEnlargedPhoto,
-  setShowModal2,
+  setCreateCommentModal,
   isAdmin,
+  username,
+  showAddComment,
   onDeletePost,
   onDeleteComment,
 }) {
   return (
     <div className="forum-entry mb-4" key={entry.id || index}>
+      {console.log(
+        "here we check if showAddComment in ForumPost:",
+        showAddComment
+      )}
       <div className="d-flex justify-content-between">
         <span>
           <strong>{entry.author?.username || "Anonymous"}</strong>
         </span>
         <span>{new Date(entry.timestamp).toLocaleDateString()}</span>
-        {isAdmin && (
+        {(isAdmin || username === entry.author?.username) && (
           <button
             type="button"
             className="text-danger fw-bold fs-2 text-decoration-none ms-2"
@@ -38,13 +42,13 @@ export default function ForumPost({
                   src={`data:image/jpeg;base64,${entry.photo}`}
                   alt="Post"
                   className="w100"
-                  style={{ objectFit: "cover", borderRadius: "8px" }}
+                  style={{ objectFit: "scale-down", borderRadius: "8px" }}
                   onClick={() => {
                     setEnlargedPhoto(`data:image/jpeg;base64,${entry.photo}`);
                   }}
                 />
               )}
-              <p>{entry.description}</p>
+              <p style={{ fontSize: "small" }}>{entry.description}</p>
             </div>
           </div>
 
@@ -54,7 +58,7 @@ export default function ForumPost({
           >
             <div className="d-flex align-items-center mb-2">
               <strong className="me-2">Comments</strong>
-              {!isAdmin && (
+              {!isAdmin && showAddComment && (
                 <button
                   type="button"
                   className="text-primary fs-2 text-decoration-none ms-auto"
@@ -63,7 +67,7 @@ export default function ForumPost({
                     border: "none",
                   }}
                   onClick={() => {
-                    setShowModal2(entry.id);
+                    setCreateCommentModal(entry.id);
                   }}
                 >
                   +
@@ -83,15 +87,15 @@ export default function ForumPost({
                     <br />
                     {comment.content}
                   </div>
-                  {isAdmin && (
+                  {(isAdmin || username === comment.username) && (
                     <button
                       type="button"
                       className="text-danger fw-bold fs-5 text-decoration-none ms-2"
                       style={{ background: "none", border: "none" }}
-                      onClick={() => onDeleteComment(entry.id, comment.id)}
+                      onClick={() => onDeleteComment(comment.id)}
                       title="Delete Comment"
                     >
-                      &minus; Delete Comment
+                      &minus; <small>delete</small>
                     </button>
                   )}
                 </>

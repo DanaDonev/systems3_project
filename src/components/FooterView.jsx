@@ -1,6 +1,20 @@
 import { Link } from "react-router-dom";
 
 export default function FooterView() {
+  const quickLinks = [
+    { to: "/", label: "Home" },
+    { to: "/howitworks", label: "How It Works" },
+    { to: "/register", label: "Create an account" },
+    { to: "/createlisting", label: "Create a listing" },
+  ];
+  const connectLinks = [
+    { to: "mailto:info.petsitter.si@gmail.com", label: "envelope" },
+    { to: "#", label: "facebook" },
+    { to: "#", label: "instagram" },
+    { to: "#", label: "youtube" },
+    { to: "#", label: "twitter" },
+  ];
+
   return (
     <>
       <nav className="pt-4 text-black bg-body-secondary">
@@ -17,47 +31,31 @@ export default function FooterView() {
             <div className="col-md-4">
               <h5>Quick Links</h5>
               <ul className="list-unstyled">
-                <li>
-                  <Link to="/" className="text-black text-decoration-none">
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/howitworks" className="text-black text-decoration-none">
-                    How It Works
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/register" className="text-black text-decoration-none">
-                    Create an account
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/createlisting" className="text-black text-decoration-none">
-                    Create a listing
-                  </Link>
-                </li>
+                {quickLinks.map((link) => (
+                  <li key={link.to}>
+                    <Link
+                      to={link.to}
+                      className="text-black text-decoration-none"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
             <div className="col-md-4 mb-3">
               <h5>Connect with Us</h5>
               <div className="d-flex align-items-center gap-3">
-                <Link to="info.petsitter.si@gmail.com" className="text-black">
-                  <i className="bi bi-envelope"></i>
-                </Link>
-                <Link to="#" className="text-black">
-                  <i className="bi bi-facebook"></i>
-                </Link>
-                <Link to="#" className="text-black">
-                  <i className="bi bi-instagram"></i>
-                </Link>
-                <Link to="#" className="text-black">
-                  <i className="bi bi-youtube"></i>
-                </Link>
-                <Link to="#" className="text-black">
-                  <i className="bi bi-twitter"></i>
-                </Link>
+                {connectLinks.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    className="text-black"
+                  >
+                   <i className={`bi bi-${link.label.toLowerCase().replace(" ", "-")}`}></i>
+                  </Link>
+                ))}
               </div>
             </div>
           </div>

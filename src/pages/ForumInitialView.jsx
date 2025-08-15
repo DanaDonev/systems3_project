@@ -13,11 +13,12 @@ export default function ForumInitialView() {
   const navigate = useNavigate();
 
   useEffect(() => {
-      if (!token) {
-        navigate("/signin");
-      }
-      console.log("isAuthenticated:", token);
-    }, [token, navigate]);
+    if (!token) {
+      navigate("/signin");
+      alert("Please first sign in.");
+    }
+    console.log("isAuthenticated:", token);
+  }, [token, navigate]);
 
   const handlePetChange = (e) => {
     setPet(e.target.id);

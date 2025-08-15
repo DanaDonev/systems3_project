@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function ResetPasswordView() {
   const { token } = useParams();
-  console.log("Reset token:", token); // Log the token for debugging
+  //console.log("Reset token:", token);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [message, setMessage] = useState("");
@@ -23,12 +24,14 @@ export default function ResetPasswordView() {
       return;
     }
     try {
-      const res = await axios.post("http://88.200.63.148:5006/users/resetpassword", {
+      const res = await axios.post(`${API_URL}/users/resetpassword`, {
         token,
         password,
       });
       setSuccess(true);
-      setMessage(res.data.message || "Password reset successful! You can now sign in.");
+      setMessage(
+        res.data.message || "Password reset successful! You can now sign in."
+      );
       setTimeout(() => navigate("/signin"), 3000);
     } catch (err) {
       setMessage(
@@ -40,7 +43,10 @@ export default function ResetPasswordView() {
 
   return (
     <section className="container my-5">
-      <div className="p-3 rounded shadow" style={{ maxWidth: 400, margin: "0 auto" }}>
+      <div
+        className="p-3 rounded shadow"
+        style={{ maxWidth: 400, margin: "0 auto" }}
+      >
         <h2 className="text-center mb-4">Reset Password</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -49,7 +55,7 @@ export default function ResetPasswordView() {
               type="password"
               className="form-control"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
@@ -59,16 +65,22 @@ export default function ResetPasswordView() {
               type="password"
               className="form-control"
               value={confirm}
-              onChange={e => setConfirm(e.target.value)}
+              onChange={(e) => setConfirm(e.target.value)}
               required
             />
           </div>
           {message && (
-            <div className={`alert ${success ? "alert-success" : "alert-danger"}`}>
+            <div
+              className={`alert ${success ? "alert-success" : "alert-danger"}`}
+            >
               {message}
             </div>
           )}
-          <button type="submit" className="btn btn-secondary w-100" disabled={success}>
+          <button
+            type="submit"
+            className="btn btn-secondary w-100"
+            disabled={success}
+          >
             Reset Password
           </button>
         </form>

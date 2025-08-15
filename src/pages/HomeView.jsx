@@ -1,18 +1,20 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 
 export default function HomeView() {
   const navigate = useNavigate();
+  const { token } = useAuth();
 
   return (
     <div className="bg-body-tertiary">
       <div className="section1">
         <section className="text-center mb-5 pt-5">
-          <h1 className="pt-4">Welcome to the website for petsitting!</h1>
+          <h1 className="pt-4">Welcome to the <u>no. 1</u> website for petsitting!</h1> 
           <div>
             <button className="button1" onClick={() => navigate("/listing")}>
               Find a PetSitter
             </button>
-            <button className="button1" onClick={() => navigate("/register")}>
+            <button className="button1" onClick={() => token ? (navigate("/profile")) : (navigate("/register"))}>
               Be a PetSitter
             </button>
           </div>
