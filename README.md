@@ -1,70 +1,99 @@
-# Getting Started with Create React App
+# PetSitter – Web Application for Pet Services 🐾
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+[![Watch the demo](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID/hqdefault.jpg)](https://www.youtube.com/watch?v=USQxZs0qh_c&list=PL_Ucvi_-8VOwpWoBVJ2dEecu-vzqPNpB2&index=1)
 
-In the project directory, you can run:
 
-### `npm start`
+**Repository:** [GitHub](https://github.com/DanaDonev/systems3_project)
+**Demo Videos:** [YouTube Playlist](https://www.youtube.com/playlist?list=PL_Ucvi_-8VOwpWoBVJ2dEecu-vzqPNpB2)
+**Live Application:** [PetSitter Web App](http://88.200.63.148:5006/)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## About
 
-### `npm test`
+PetSitter connects pet owners with trusted caretakers, veterinarians, and pet lovers. 🐶🐱
+Users can manage profiles, list or book services, and interact in a fun, safe community forum. The platform ensures secure, role-based access for all users.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Tech Stack
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* **Frontend:** React, Bootstrap
+* **Backend:** Node.js, Express
+* **Database:** MySQL (managed via phpMyAdmin)
+* **Languages:** JavaScript, HTML, CSS
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Core Features
 
-### `npm run eject`
+* User registration & pet profiles 🐕
+* Service listings & bookings 📅
+* Search & filtering for caretakers 🔍
+* Forum for community interaction 💬
+* Admin moderation & control 🛡️
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Demo Access
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Try the app without registering using these demo accounts:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+* **Admin:** `adminemail@email.com` | `Petsitter25`
+* **Pet Sitter:** `tina_k31@example.com` | `_25mqI0l`
+* **Pet Owner:** `nika_m99@example.com` | `@&8gCEgf`
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Folder Structure 🗂️
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Here’s how the project is organized:
 
-### Code Splitting
+```
+/sistemi_project      # Frontend React application (your main stage!)
+/backend              # Express backend with API routes & database connection
+README.md             # This file (hello! 👋)
+SRS.pdf               # Software Requirements Specification document
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+> The frontend and backend are separate, but they’re best friends—they talk to each other to make the magic happen! ✨
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## How to Run Locally 💻
 
-### Making a Progressive Web App
+Want to try it yourself? Just follow these steps:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+1. **Clone the repository**
 
-### Advanced Configuration
+```bash
+git clone https://github.com/DanaDonev/systems3_project.git
+cd systems3_project
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+2. **Set up the backend**
 
-### Deployment
+```bash
+cd backend
+npm install
+# Configure your MySQL database in the backend config (phpMyAdmin/MySQL)
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+3. **Set up the frontend**
 
-### `npm run build` fails to minify
+```bash
+cd ../sistemi_project
+npm install
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+4. **Open your browser**
+   Go to [http://localhost:3000](http://localhost:3000) and enjoy! 🎉
+
+> Make sure the backend is running first so the frontend can talk to it.
+
+---
+
+*For full functionality details, see the SRS document in this repository.*
