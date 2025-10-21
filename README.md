@@ -1,7 +1,7 @@
 # PetSitter – Web Application for Pet Services 🐾
 
 
-[![Watch the demo](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID/hqdefault.jpg)](https://www.youtube.com/watch?v=USQxZs0qh_c&list=PL_Ucvi_-8VOwpWoBVJ2dEecu-vzqPNpB2&index=1)
+[![Watch the demo](https://img.youtube.com/vi/USQxZs0qh_c/hqdefault.jpg)](https://www.youtube.com/watch?v=USQxZs0qh_c&list=PL_Ucvi_-8VOwpWoBVJ2dEecu-vzqPNpB2&index=1)
 
 
 **Repository:** [GitHub](https://github.com/DanaDonev/systems3_project)
